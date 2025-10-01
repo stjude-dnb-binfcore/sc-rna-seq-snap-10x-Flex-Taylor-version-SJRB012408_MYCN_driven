@@ -48,15 +48,23 @@ fi
 for SAMPLES_FILE in "${csv_files[@]}"; do
     # Get the base filename without directory and extension
     base_name=$(basename "$SAMPLES_FILE" .csv)
+    
+    # Skip example config files
+    if [[ "$base_name" == "multi_config_library_ID1" || "$base_name" == "multi_config_library_ID2" ]]; then
+    echo "Skipping example config file"
+          continue
+    fi
+    
     # Create subdirectory for each library using the base filename
     lib_dir="${output_dir}/${base_name}"
     mkdir -p "$lib_dir"
     run_id="multi_run_${cellranger_parameters}"
+    log_id="${base_name/config/run}" # To generate log_id for each library
 
     echo "Processing $SAMPLES_FILE in $lib_dir"
 
     bsub -J "RNA_Multi_${base_name}" -n 8 -M 128000 -R "rusage[mem=16000]" \
-        -o "${logs_dir}/${run_id}.out" -e "${logs_dir}/${run_id}.err" \
+        -o "${logs_dir}/${log_id}.out" -e "${logs_dir}/${log_id}.err" \
         "cd ${lib_dir} && \
          cellranger multi \
            --id=${run_id} \
