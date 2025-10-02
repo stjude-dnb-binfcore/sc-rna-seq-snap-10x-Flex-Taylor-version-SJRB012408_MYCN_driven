@@ -70,11 +70,10 @@ for filename in glob.glob(os.path.join(args.dir, "multi_config_*", "multi_run_*"
     ### LIBRARY-BASED QC METRICS ####
 
     # Assuming you already have a DataFrame 'df'
-    # Clean the "Cells" column by removing any non-numeric characters (e.g., commas)
-    df["Cells"] = df["Cells"].replace({",": ""}, regex=True)  # Remove commas
-    # Convert the "Cells" column to a numeric type (int or float)
-    df["Cells"] = pd.to_numeric(df["Cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-
+     # Clean the "Mean reads per cell" column by removing any non-numeric characters (e.g., commas)
+    df["Library: Mean reads per cell"] = df["Library: Mean reads per cell"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Mean reads per cell"] = pd.to_numeric(df["Library: Mean reads per cell"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    
     if df.iloc[0]["Library: Mean reads per cell"] < 10000:
         Warnings = Warnings + "Library: Mean reads per cell < 10000, "
         TotalWarnings += 1
