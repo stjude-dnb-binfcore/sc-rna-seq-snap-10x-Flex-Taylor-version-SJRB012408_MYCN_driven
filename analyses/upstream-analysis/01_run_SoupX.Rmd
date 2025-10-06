@@ -267,7 +267,8 @@ for (config_dir in multi_config_dirs) {
     stopifnot(identical(rownames(raw_matrix), rownames(filtered_matrix)))
     
     sc_raw <- SoupChannel(raw_matrix, filtered_matrix, mDat)
-    sc <- autoEstCont(sc_raw, forceAccept = TRUE, tfidfMin = 0.1, soupQuantile = 0.9)
+    sc <- autoEstCont(sc_raw, forceAccept = TRUE)
+    #sc <- autoEstCont(sc_raw, forceAccept = TRUE, tfidfMin = 0.1, soupQuantile = 0.9)
     print(sc)
     soup_fraction_value <- sc$fit$rhoEst
     
