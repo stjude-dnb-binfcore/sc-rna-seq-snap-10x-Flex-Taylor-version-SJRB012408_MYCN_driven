@@ -57,5 +57,4 @@ cell_type_colors <- data.frame(
 write_tsv(cell_type_colors, file = paste0(output_dir, "/", "HumanPrimaryCellAtlasData_cell_types_with_colors.tsv")) # Save df
 
 # Print a message to confirm
-cat("The cell types and their hex colors have been saved to 'unique_cell_types_with_colors.tsv'.\n")
-
+cat("The cell types and their hex colors have been saved to 'HumanPrimaryCellAtlasData_cell_types_with_colors.tsv'.\n")
