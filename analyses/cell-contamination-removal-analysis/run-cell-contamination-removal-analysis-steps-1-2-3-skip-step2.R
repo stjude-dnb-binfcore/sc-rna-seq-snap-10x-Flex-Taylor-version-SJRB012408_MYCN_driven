@@ -33,8 +33,8 @@ report_dir <- file.path(analysis_dir, "plots")
 # Run Rmd scripts 
 ################################################################################################################
 future_globals_value <- as.numeric(yaml$future_globals_value_contamination) * 1024^3
-resolution = yaml$resolution_clustering_module
-integration_method = yaml$integration_method_clustering_module
+resolution <- yaml$resolution_clustering_module
+integration_method <- yaml$integration_method_clustering_module
 
 ##########################################################################################
 
@@ -89,7 +89,7 @@ rmarkdown::render('01-cell-contamination-removal.Rmd', clean = TRUE,
 
 ################################################################################################################
 # step 3 - Clustering
-resolution = yaml$resolution_clustering_module
+#resolution <- yaml$resolution_clustering_module
 
 rmarkdown::render('03-cluster-cell-calling.Rmd', clean = TRUE,
                   output_dir = file.path(report_dir),

@@ -148,9 +148,10 @@ Reviewed by: _____________________   Date: ____________ \
   
 # Information about this notebook
 
-This notebook is relevant to projects in which we need to remove cell contamination from the object, e.g., clusters. After inspection of the two rounds of results in the `cluster-cell-calling` module, the user can remove clusters if necessary. For example, in PDX projects there may be both human and mouse clusters after the `02-find-markers.Rmd` step in `cluster-cell-calling`. We then recommend running the `cell-contamination-removal-analysis` module to drop contaminating clusters and repeat normalization and integration. Point `cell-types-annotation` at this module output when contamination removal is performed (see `README.md` in this folder and root `README.md`).
+This notebook is relevant to projects in which we need to remove cell contamination from the object, e.g., clusters. After inspection of the two rounds of results in the `cluster-cell-calling` module, the user can remove clusters if necessary. For example, in PDX projects there may be both human and mouse clusters identified after the `02-find-markers.Rmd` step in `cluster-cell-calling`. We then recommend running the `cell-contamination-removal-analysis` module to remove contaminating clusters and repeat normalization and integration. This object can then be used for cell type annotation or other types of analysis (see `README.md` in this folder, documentation in the `yaml` file, and root `README.md`).
 
 # Set up
+
 ```{r load-library, echo=TRUE}
 attach(params)
 suppressPackageStartupMessages({
@@ -220,7 +221,7 @@ source(paste0(upstream_analysis_dir, "/util/function-calculate-qc-metrics.R"))
 
 # Read seurat object
 
-First, we use the Seurat object from `01-cluster-cell-calling.Rmd` in `cluster-cell-calling` (`seurat_obj_clusters_all.rds` under results `01_cluster_cell_calling_{resolution_cluster_folder}`). Clusters used for contamination removal use the granularity in params as `resolution_list` (typically the same resolution chosen for markers in `project_parameters.Config.yaml`).
+First, we use the Seurat object from `01-cluster-cell-calling.Rmd` in `cluster-cell-calling` (`seurat_obj_clusters_all.rds` under results `01_cluster_cell_calling_{resolution_cluster_folder}`). Clusters used for contamination removal use the granularity as defined in params as `resolution_list` (typically the same resolution chosen for `02-find-markers.Rmd` in the `cluster-cell-calling` module, defined in `project_parameters.Config.yaml`).
 
 ```{r read-object, echo=TRUE}
 seurat_obj <- readRDS(data_file)
@@ -392,14 +393,26 @@ Next, we apply a linear transformation (‘scaling’) that is a standard pre-pr
 Next we perform PCA on the scaled data. By default, only the previously determined variable features are used as input, but can be defined using features argument if you wish to choose a different subset (if you do want to use a custom subset of features, make sure you pass these to ScaleData first). For the first principal components, Seurat outputs a list of genes with the most positive and negative loadings, representing modules of genes that exhibit either correlation (or anti-correlation) across single-cells in the dataset. Next, we will run UMAP to visualize and explore the data. The goal of non-linear dimensional reduction algorithms is to learn underlying structure in the dataset, in order to place similar cells together in low-dimensional space. Therefore, cells that are grouped together within graph-based clusters determined above should co-localize on these dimension reduction plots.
 
 ```{r process-seurat, echo=TRUE}
-# Remove previous clustering, UMAP and PC information from metadata
+# Remove previous clustering, UMAP duplicates and PC-related columns from metadata
 seurat_obj$seurat_clusters <- NULL
 seurat_obj@meta.data <- seurat_obj@meta.data %>% 
-  select(-contains(c("UMAPndim", "PC", "snn_res."))) %>% 
+  select(-contains(c("UMAPndim", "PC", "snn_res.")),
+         -matches("UMAP_.*\\.[xy]$")) %>%  # removes UMAP_1.x, UMAP_2.x, UMAP_1.y, UMAP_2.y
   distinct()
 
 head(rownames(seurat_obj), 10)
 
+#head(seurat_obj@meta.data)
+
+# Find columns related to UMAP
+#umap_cols <- grep("umap", colnames(seurat_obj@meta.data), value = TRUE, ignore.case = TRUE)
+
+# If found, print them
+#if (length(umap_cols) > 0) {
+#  print(umap_cols)
+#} else {
+#  message("No UMAP columns found in meta.data")
+#}
 ##############################################################################################
 
 cat("Create and process seurat", "\n")

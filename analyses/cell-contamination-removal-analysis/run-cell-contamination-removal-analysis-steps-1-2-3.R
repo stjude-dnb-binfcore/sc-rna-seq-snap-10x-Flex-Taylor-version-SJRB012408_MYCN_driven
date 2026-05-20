@@ -124,7 +124,7 @@ rmarkdown::render('02-integrative-analysis.Rmd', clean = TRUE,
 
 ################################################################################################################
 # step 3 - Clustering
-resolution = yaml$resolution_clustering_module
+#resolution <- yaml$resolution_clustering_module
 
 rmarkdown::render('03-cluster-cell-calling.Rmd', clean = TRUE,
                   output_dir = file.path(report_dir),
